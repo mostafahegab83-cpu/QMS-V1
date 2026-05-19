@@ -1,0 +1,58 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function userRole(uid) {
+      return get(/databases/$(database)/documents/users/$(uid)).data.role;
+    }
+
+    function isAdmin() {
+      return isSignedIn() &&
+        (userRole(request.auth.uid) == 'super_admin' ||
+         userRole(request.auth.uid) == 'admin');
+    }
+
+    // Users collection
+    match /users/{uid} {
+      // A user can read their own profile; admins can read all
+      allow read: if isSignedIn() && (request.auth.uid == uid || isAdmin());
+
+      // On signup, the user creates their own doc.
+      // Role MUST be 'employee' unless email is the bootstrap super_admin.
+      allow create: if isSignedIn() &&
+        request.auth.uid == uid &&
+        (
+          (request.resource.data.role == 'employee') ||
+          (request.resource.data.role == 'super_admin' &&
+           request.resource.data.email == 'mostafa.hegab83@gmail.com')
+        );
+
+      // Users can update their own non-role fields; only admins can change role
+      allow update: if isSignedIn() && (
+        (request.auth.uid == uid &&
+         request.resource.data.role == resource.data.role) ||
+        isAdmin()
+      );
+
+      allow delete: if isAdmin();
+    }
+
+    // Audit logs — append only, admins read
+    match /auditLogs/{logId} {
+      allow read: if isAdmin();
+      allow create: if isSignedIn() &&
+        request.resource.data.actorId == request.auth.uid;
+      allow update, delete: if false;
+    }
+
+    // Placeholder collections for upcoming modules
+    match /documents/{doc=**}   { allow read, write: if isSignedIn(); }
+    match /audits/{doc=**}      { allow read, write: if isSignedIn(); }
+    match /capa/{doc=**}        { allow read, write: if isSignedIn(); }
+    match /kpis/{doc=**}        { allow read, write: if isSignedIn(); }
+  }
+}
