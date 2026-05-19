@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Dashboard — QMS</title>
+  <link rel="stylesheet" href="./css/styles.css" />
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand"><span class="dot" style="width:10px;height:10px;background:var(--primary-hover);border-radius:50%;display:inline-block"></span> QMS</div>
+      <div class="nav-section">Overview</div>
+      <a href="./dashboard.html">Dashboard</a>
+      <div class="nav-section">Modules</div>
+      <a href="./pages/documents.html">Document Control</a>
+      <a href="./pages/audits.html">Audits</a>
+      <a href="./pages/capa.html">CAPA</a>
+      <a href="./pages/kpis.html">KPIs &amp; Reports</a>
+      <div class="nav-section">Administration</div>
+      <a href="./pages/users.html" data-admin-only>User Management</a>
+      <a href="./pages/audit-logs.html" data-admin-only>Audit Trail</a>
+    </aside>
+    <div class="main">
+      <header class="topbar">
+        <div class="title">Dashboard</div>
+        <div class="user">
+          <button id="themeToggle" class="btn btn-ghost btn-sm">Theme</button>
+          <button id="logoutBtn" class="btn btn-ghost btn-sm">Sign out</button>
+          <div class="avatar" id="avatar">U</div>
+          <div>
+            <div class="name" id="userName">…</div>
+            <div class="role" id="userRole">…</div>
+          </div>
+        </div>
+      </header>
+      <main class="content">
+        <h2>Welcome to QMS</h2>
+        <p class="lead">Phase 1 — Foundation &amp; Auth. Modules below are scaffolded and ready for build-out.</p>
+
+        <div class="grid">
+          <div class="card"><div class="label">Documents</div><div class="value">0</div><div class="desc">Controlled documents</div></div>
+          <div class="card"><div class="label">Open audits</div><div class="value">0</div><div class="desc">In progress</div></div>
+          <div class="card"><div class="label">CAPA items</div><div class="value">0</div><div class="desc">Awaiting action</div></div>
+          <div class="card"><div class="label">KPIs tracked</div><div class="value">0</div><div class="desc">Active indicators</div></div>
+        </div>
+      </main>
+    </div>
+  </div>
+  <script type="module" src="./js/app.js"></script>
+</body>
+</html>
