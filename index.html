@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>QMS Pro</title>
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+<!-- LOGIN -->
+<section id="view-login" class="view auth-wrap hidden">
+  <div class="auth-card">
+    <h1>Sign in</h1>
+    <p class="muted">Access your quality management workspace</p>
+    <form data-form="login">
+      <label>Email<input type="email" name="email" required placeholder="you@company.com" /></label>
+      <label>Password<input type="password" name="password" required /></label>
+      <button type="submit" class="btn primary">Sign in</button>
+    </form>
+    <p class="muted center">No account? <a href="#signup" data-nav>Sign up</a></p>
+  </div>
+</section>
+
+<!-- SIGNUP -->
+<section id="view-signup" class="view auth-wrap hidden">
+  <div class="auth-card">
+    <h1>Create account</h1>
+    <p class="muted">Start managing your ISO 9001 program</p>
+    <form data-form="signup">
+      <label>Full name<input name="name" required /></label>
+      <label>Email<input type="email" name="email" required /></label>
+      <label>Password<input type="password" name="password" required minlength="8" /></label>
+      <button type="submit" class="btn primary">Create account</button>
+    </form>
+    <p class="muted center">Already registered? <a href="#login" data-nav>Sign in</a></p>
+  </div>
+</section>
+
+<!-- DASHBOARD -->
+<section id="view-dashboard" class="view dash hidden">
+  <aside class="sidebar">
+    <div class="brand">QMS Pro</div>
+    <nav>
+      <a href="#dashboard" data-nav class="active">Dashboard</a>
+      <a href="#dashboard" data-nav>Leadership</a>
+      <a href="#dashboard" data-nav>Risk &amp; CAPA</a>
+      <a href="#dashboard" data-nav>Audits</a>
+      <a href="#dashboard" data-nav>Training</a>
+      <a href="#dashboard" data-nav>Documents</a>
+      <a href="#dashboard" data-nav>Reports</a>
+    </nav>
+    <button class="btn ghost" data-action="logout">Sign out</button>
+  </aside>
+  <main class="content">
+    <header class="topbar"><h1>Manage Easily App</h1></header>
+    <div class="tiles">
+      <a class="tile" href="#dashboard" data-nav><span>Leadership</span></a>
+      <a class="tile" href="#dashboard" data-nav><span>Risk &amp; CAPA</span></a>
+      <a class="tile" href="#dashboard" data-nav><span>Audits</span></a>
+      <a class="tile" href="#dashboard" data-nav><span>Training</span></a>
+      <a class="tile" href="#dashboard" data-nav><span>Customer Quality</span></a>
+      <a class="tile" href="#dashboard" data-nav><span>Suppliers</span></a>
+      <a class="tile" href="#dashboard" data-nav><span>Document Control</span></a>
+      <a class="tile" href="#dashboard" data-nav><span>Operations</span></a>
+      <a class="tile" href="#dashboard" data-nav><span>Reports &amp; Analytics</span></a>
+    </div>
+  </main>
+</section>
+
+<script src="app.js"></script>
+</body>
+</html>
