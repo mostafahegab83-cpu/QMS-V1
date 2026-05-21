@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Audit Records - QMS V1</title>
+  <link rel="stylesheet" href="audit.css" />
+</head>
+<body>
+  <header class="topbar">
+    <a href="index.html" class="back-btn">← Back</a>
+    <h1>Audit Records</h1>
+    <button id="logoutBtn" class="logout-btn">Logout</button>
+  </header>
+
+  <main class="container">
+    <section class="card">
+      <h2 id="formTitle">New Audit Record</h2>
+      <form id="auditForm">
+        <input type="hidden" id="auditId" />
+
+        <div class="grid">
+          <label>Audit Date
+            <input type="date" id="auditDate" required />
+          </label>
+          <label>Auditor Name
+            <input type="text" id="auditorName" required />
+          </label>
+          <label>Process / Area
+            <input type="text" id="processArea" required />
+          </label>
+          <label>Process Owner
+            <input type="text" id="processOwner" />
+          </label>
+          <label>SLA Target
+            <input type="text" id="slaTarget" placeholder="e.g. 95%" />
+          </label>
+          <label>SLA Actual
+            <input type="text" id="slaActual" placeholder="e.g. 92%" />
+          </label>
+          <label>Compliance Status
+            <select id="complianceStatus" required>
+              <option value="">Select...</option>
+              <option value="Compliant">Compliant</option>
+              <option value="Partially Compliant">Partially Compliant</option>
+              <option value="Non-Compliant">Non-Compliant</option>
+            </select>
+          </label>
+          <label>Risk Type
+            <select id="riskType">
+              <option value="">Select...</option>
+              <option value="Operational">Operational</option>
+              <option value="Compliance">Compliance</option>
+              <option value="Financial">Financial</option>
+              <option value="Strategic">Strategic</option>
+              <option value="Reputational">Reputational</option>
+            </select>
+          </label>
+          <label>Risk Level
+            <select id="riskLevel">
+              <option value="">Select...</option>
+              <option value="Low">Low</option>
+              <option value="Medium">Medium</option>
+              <option value="High">High</option>
+              <option value="Critical">Critical</option>
+            </select>
+          </label>
+          <label>CAPA Type
+            <select id="capaType">
+              <option value="">Select...</option>
+              <option value="Corrective">Corrective</option>
+              <option value="Preventive">Preventive</option>
+            </select>
+          </label>
+          <label>CAPA Due Date
+            <input type="date" id="capaDueDate" />
+          </label>
+        </div>
+
+        <label class="full">Findings / Observations
+          <textarea id="findings" rows="3"></textarea>
+        </label>
+
+        <label class="full">CAPA Description
+          <textarea id="capaDescription" rows="3"></textarea>
+        </label>
+
+        <label class="full">Evidence (PDF / Word / Excel / Email — max 20MB)
+          <input type="file" id="evidenceFile" accept=".pdf,.doc,.docx,.xls,.xlsx,.eml" />
+          <small id="currentFile"></small>
+        </label>
+
+        <div class="actions">
+          <button type="submit" id="saveBtn" class="primary">Save Audit</button>
+          <button type="button" id="resetBtn" class="ghost">Clear</button>
+        </div>
+        <p id="status" class="status"></p>
+      </form>
+    </section>
+
+    <section class="card">
+      <h2>Saved Audits</h2>
+      <div id="auditList" class="audit-list">Loading...</div>
+    </section>
+  </main>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
+  <script src="audit.js"></script>
+</body>
+</html>
