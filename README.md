@@ -1,23 +1,21 @@
-# QMS — Document Control update
+# QMS — Training permissions fix
 
-This bundle contains your original project files with the **Document Control** module integrated.
+This bundle contains your QMS files with the Training module and a corrected `firestore.rules` file.
 
-## Files in this bundle
+## What was fixed
 
-Updated:
-- `index.html` — added Document Control nav tab, home tile, `<section id="docctrl">`, and script include.
-- `firestore.rules` — added rules for `documents` and `documentVersionHistory` collections.
+- Removed the extra closing braces at the end of `firestore.rules` that caused Firebase to show: `Line 117: Unexpected '}'`.
+- Confirmed `training_records` has read/create/update permissions for approved signed-in users.
+- Added basic validation for training record saves.
+- Updated `training.js` to save the logged-in email from the current session and show a clearer permission message.
 
-New:
-- `document-control.js` — the self-contained Document Control module.
+## Required deployment steps
 
-Unchanged (included as-is from your upload):
-- `app.js`, `firebase.js`, `styles.css`
-- `nc-risk-capa.js`, `nc-register.js`, `nc-reason-chart.js`, `risk-register.js`
-- `manage-easy-logo.png`
+1. Replace your current app files with the files from this zip.
+2. Open Firebase Console → Firestore Database → Rules.
+3. Replace the rules with the included `firestore.rules` content.
+4. Click **Publish**.
+5. Hard refresh the app with **Ctrl+F5**.
+6. Sign in with an approved user/admin account and submit the Training form again.
 
-## Deploy steps
-
-1. Replace the files above in your repository with the ones from this bundle.
-2. Deploy the updated Firestore rules (Firebase console → Firestore → Rules → paste → Publish).
-3. Hard-refresh the app (Ctrl+F5) and click the new **Document Control** tile.
+If the user is not listed in `approved_users` or is revoked, Firebase will still block saving by design.
