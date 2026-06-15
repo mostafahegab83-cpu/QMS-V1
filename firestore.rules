@@ -1,0 +1,133 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null && request.auth.token.email != null;
+    }
+
+    function signedInEmail() {
+      return request.auth.token.email;
+    }
+
+    function isSuperAdmin() {
+      return isSignedIn() && (
+        signedInEmail() == 'mostafa.hegab83@gmail.com'
+        || exists(/databases/$(database)/documents/super_admins/$(signedInEmail()))
+      );
+    }
+
+    function approvedUserDoc() {
+      return get(/databases/$(database)/documents/approved_users/$(signedInEmail()));
+    }
+
+    function isApproved() {
+      return isSignedIn() && (
+        isSuperAdmin()
+        || (
+          exists(/databases/$(database)/documents/approved_users/$(signedInEmail()))
+          && approvedUserDoc().data.approved == true
+          && approvedUserDoc().data.revoked != true
+        )
+      );
+    }
+
+    function isAdmin() {
+      return isSuperAdmin() || (
+        isApproved()
+        && approvedUserDoc().data.role in ['admin', 'super_admin']
+      );
+    }
+
+    match /super_admins/{email} {
+      allow read: if isSignedIn();
+      allow write: if isSuperAdmin();
+    }
+
+    match /approved_users/{email} {
+      allow read: if isSignedIn();
+      allow create, update, delete: if isAdmin();
+    }
+
+    match /compliance_records/{id} {
+      allow read, create, update: if isApproved();
+      allow delete: if isAdmin();
+    }
+
+    match /records/{id} {
+      allow read, create, update: if isApproved();
+      allow delete: if isAdmin();
+    }
+
+    match /capa_records/{id} {
+      allow read, create, update: if isApproved();
+      allow delete: if isAdmin();
+    }
+
+    match /capa/{id} {
+      allow read, create, update: if isApproved();
+      allow delete: if isAdmin();
+    }
+
+    match /risk_register/{id} {
+      allow read, create, update: if isApproved();
+      allow delete: if isAdmin();
+    }
+
+    match /risk/{id} {
+      allow read, create, update: if isApproved();
+      allow delete: if isAdmin();
+    }
+
+    match /nc_register/{id} {
+      allow read, create, update: if isApproved();
+      allow delete: if isAdmin();
+    }
+
+    match /audit_log/{id} {
+      allow read: if isApproved();
+      allow create: if isApproved();
+      allow update, delete: if false;
+    }
+
+    match /audit_logs/{id} {
+      allow read: if isApproved();
+      allow create: if isApproved();
+      allow update, delete: if false;
+    }
+
+    // Documents — read open to any signed-in user so the Document Control
+    // list always loads. Writes still require an approved account.
+    match /documents/{id} {
+      allow read: if isSignedIn();
+      allow create, update: if isApproved();
+      allow delete: if isAdmin();
+    }
+
+    match /documentVersionHistory/{id} {
+      allow read: if isSignedIn();
+      allow create: if isApproved();
+      allow update, delete: if isAdmin();
+    }
+
+    match /training_records/{id} {
+      allow read: if isApproved();
+      allow create: if isApproved()
+        && request.resource.data.employeeName is string
+        && request.resource.data.employeeId is string
+        && request.resource.data.completedTrainings is list
+        && request.resource.data.missingTrainings is list;
+      allow update: if isApproved();
+      allow delete: if isAdmin();
+    }
+
+    match /supplier_evaluations/{id} {
+      allow read: if isApproved();
+      allow create, update: if isApproved()
+        && request.resource.data.supplierName is string
+        && request.resource.data.supplierId is string
+        && request.resource.data.category is string;
+      allow delete: if isAdmin();
+    }
+  }
+}

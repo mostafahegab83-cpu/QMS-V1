@@ -1,0 +1,32 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    function isSignedIn() {
+      return request.auth != null && request.auth.token.email != null;
+    }
+
+    // Document attachments: PDF, Word, Excel, Email (.eml/.msg)
+    // Path layout: documents/{documentDocId}/{timestamp}_{filename}
+    match /documents/{documentId}/{fileName} {
+      // Any signed-in user can read attachments (matches Firestore documents read).
+      allow read: if isSignedIn();
+
+      // Any signed-in user can upload, with size + content-type limits.
+      allow create, update: if isSignedIn()
+        && request.resource.size < 25 * 1024 * 1024  // 25 MB max
+        && (
+          request.resource.contentType.matches('application/pdf')
+          || request.resource.contentType.matches('application/msword')
+          || request.resource.contentType.matches('application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+          || request.resource.contentType.matches('application/vnd.ms-excel')
+          || request.resource.contentType.matches('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+          || request.resource.contentType.matches('application/vnd.ms-outlook')
+          || request.resource.contentType.matches('message/rfc822')
+          || request.resource.contentType.matches('application/octet-stream') // .msg often comes as this
+        );
+
+      allow delete: if isSignedIn();
+    }
+  }
+}
