@@ -1,0 +1,84 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null && request.auth.token.email != null;
+    }
+
+    function signedInEmail() {
+      return request.auth.token.email;
+    }
+
+    function isSuperAdmin() {
+      return isSignedIn() && (
+        signedInEmail() == 'mostafa.hegab83@gmail.com'
+        || exists(/databases/$(database)/documents/super_admins/$(signedInEmail()))
+      );
+    }
+
+    function approvedUserDoc() {
+      return get(/databases/$(database)/documents/approved_users/$(signedInEmail()));
+    }
+
+    function isAdmin() {
+      return isSuperAdmin() || (
+        isSignedIn()
+        && exists(/databases/$(database)/documents/approved_users/$(signedInEmail()))
+        && approvedUserDoc().data.role in ['admin', 'super_admin']
+      );
+    }
+
+    // --- Access control lists (admin-managed) ---
+    match /super_admins/{email} {
+      allow read: if isSignedIn();
+      allow write: if isSuperAdmin();
+    }
+
+    match /approved_users/{email} {
+      allow read: if isSignedIn();
+      allow create, update, delete: if isAdmin();
+    }
+
+    // --- Append-only audit logs ---
+    match /audit_log/{id} {
+      allow read, create: if isSignedIn();
+      allow update, delete: if false;
+    }
+
+    match /audit_logs/{id} {
+      allow read, create: if isSignedIn();
+      allow update, delete: if false;
+    }
+
+    // --- Document control ---
+    match /documents/{id} {
+      allow read, create, update: if isSignedIn();
+      allow delete: if isAdmin();
+    }
+
+    match /documentVersionHistory/{id} {
+      allow read, create: if isSignedIn();
+      allow update, delete: if isAdmin();
+    }
+
+    // --- All other application data (audit, NC/CAPA, risk, training,
+    //     supplier, maintenance, leadership, dashboard, etc.) ---
+    //     Any signed-in user can read and write; only admins can delete.
+    function isProtected(collection) {
+      return collection in ['approved_users', 'super_admins', 'audit_log', 'audit_logs'];
+    }
+
+    match /{collection}/{docId} {
+      allow read: if isSignedIn();
+      allow create, update: if isSignedIn() && !isProtected(collection);
+      allow delete: if isAdmin() && !isProtected(collection);
+    }
+
+    // Nested subcollections under any of the above
+    match /{collection}/{docId}/{sub=**} {
+      allow read: if isSignedIn();
+      allow write: if isSignedIn() && !isProtected(collection);
+    }
+  }
+}
